@@ -1,0 +1,91 @@
+databaseChangeLog:
+
+  - changeSet:
+      id: 1
+      author: szymon
+      changes:
+        - createTable:
+            tableName: LESSON
+            columns:
+              - column:
+                  name: id
+                  type: int
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: date
+                  type: timestamp
+              - column:
+                  name: teacher_email
+                  type: varchar(50)
+              - column:
+                  name: teacher_firstname
+                  type: varchar(50)
+              - column:
+                  name: teacher_lastname
+                  type: varchar(50)
+              - column:
+                  name: student_id
+                  type: int
+                  constraints:
+                    primaryKey: true
+                    primaryKeyName: student_id
+
+        - createTable:
+            tableName: lesson_hours
+            columns:
+              - column:
+                  name: id
+                  type: int
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: date
+                  type: timestamp
+              - column:
+                  name: subject
+                  type: varchar2(15 CHAR)
+
+        - createTable:
+            tableName: teacher_subjects
+            columns:
+              - column:
+                  name: teacher_id
+                  type: int
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: subject
+                  type: varchar2(15 CHAR)
+
+        - createTable:
+            tableName: term
+            columns:
+              - column:
+                  name: id
+                  type: int
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: is_free
+                  type: boolean
+              - column:
+                  name: lesson_time
+                  type: timestamp
+              - column:
+                  name: subject
+                  type: varchar(15 CHAR)
+              - column:
+                  name: teacher_id
+                  type: int
+                  constraints:
+                    primaryKey: true
+                    primaryKeyName: teacher_id

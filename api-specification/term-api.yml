@@ -1,0 +1,79 @@
+openapi: 3.0.1
+info:
+  title: teacherApi
+  description: teacherApi
+  version: '0.1'
+
+servers:
+  - url: http://localhost:8080/tutor-schedule
+paths:
+  /terms:
+    get:
+      description: Get All Terms
+      operationId: getAllTerms
+      responses:
+        '200':
+          description: array of Terms
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TeacherTerms'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+
+  /terms/{id}:
+
+    parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: integer
+          format: int64
+          minimum: 1
+
+    get:
+      description: Get teacher terms
+      summary: Get teacher terms
+      operationId: findTeacherTermsById
+      responses:
+        '200':
+          description: Teacher Terms
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TeacherTerms'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+
+components:
+  schemas:
+    # Schema for error response body
+    Status:
+      type: object
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+      required:
+        - code
+        - message
+
+    TeacherTerms:
+      type: array
+      items:
+        format: date-time
+        example: "2021-06-19 16:30:00"
+
+  responses:
+    NotFound:
+      description: Not found User with given id
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Status'

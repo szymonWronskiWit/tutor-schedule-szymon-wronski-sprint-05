@@ -1,0 +1,71 @@
+databaseChangeLog:
+
+  - changeSet:
+      id: 1
+      author: szymon
+      changes:
+        - createTable:
+            tableName: USER
+            columns:
+              - column:
+                  name: id
+                  type: int
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: first_name
+                  type: varchar(50)
+              - column:
+                  name: last_name
+                  type: varchar(50)
+              - column:
+                  name: email
+                  type: varchar(50)
+              - column:
+                  name: password
+                  type: varchar(50)
+              - column:
+                  name: date_of_birth
+                  type: date
+              - column:
+                  name: user_type
+                  type: varchar(50)
+
+        - createTable:
+            tableName: teacher
+            columns:
+#              - column:
+#                  name: id
+#                  type: int
+#                  autoIncrement: true
+#                  constraints:
+#                    primaryKey: true
+#                    nullable: false
+              - column:
+                  name: user_id
+                  type: int
+                  constraints:
+                    referencedTableName: USER
+                    referencedColumnNames: id
+                    foreignKeyName: user_teacher_id
+
+
+        - createTable:
+            tableName: student
+            columns:
+#              - column:
+#                  name: id
+#                  type: int
+#                  autoIncrement: true
+#                  constraints:
+#                    primaryKey: true
+#                    nullable: false
+              - column:
+                  name: user_id
+                  type: int
+                  constraints:
+                    referencedTableName: USER
+                    referencedColumnNames: id
+                    foreignKeyName: user_student_id

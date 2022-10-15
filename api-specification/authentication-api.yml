@@ -1,0 +1,113 @@
+openapi: 3.0.1
+info:
+  title: authenticationApi
+  description: authenticationApi
+  version: '0.1'
+
+servers:
+  - url: http://localhost:8080/tutor-schedule
+
+paths:
+  /session:
+
+    post:
+      description: Login
+      operationId: userLogin
+      requestBody:
+        $ref: '#/components/requestBodies/Login'
+      responses:
+        '202':
+          $ref: '#/components/responses/Accepted'
+        '404':
+          $ref: '#/components/responses/BadRequest'
+
+
+  /session/{id}:
+
+    parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: integer
+          format: int64
+          minimum: 1
+
+    delete:
+      description: Logout
+      operationId: userLogout
+      responses:
+        '200':
+          description: Ok
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: test
+        '405':
+          $ref: '#/components/responses/NoAllowed'
+        '404':
+          $ref: '#/components/responses/BadRequest'
+
+components:
+
+  requestBodies:
+    Login:
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              email:
+                type: string
+              password:
+                type: string
+          examples:
+            '0':
+              $ref: '#/components/examples/Login'
+
+
+  examples:
+
+    Login:
+      value:
+        {
+          "email": "marek.markiewicz@gmail.com",
+          "password": "1234"
+        }
+
+  schemas:
+
+    Status:
+      type: object
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+      required:
+        - code
+        - message
+
+  responses:
+
+    BadRequest:
+      description: Bad credentials
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Status'
+
+    Accepted:
+      description: Logged successfully
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Status'
+
+    NotAllowed:
+      description: Not Allowed
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Status'

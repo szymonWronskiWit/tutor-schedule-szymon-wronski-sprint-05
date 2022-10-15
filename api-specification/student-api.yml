@@ -1,0 +1,209 @@
+openapi: 3.0.1
+info:
+  title: studentApi
+  description: studentApi
+  version: '0.1'
+
+servers:
+  - url: http://localhost:8080/tutor-schedule
+paths:
+  /students:
+
+    post:
+      description: Adding new Student
+      operationId: addNewStudent
+      requestBody:
+        $ref: '#/components/requestBodies/Student'
+      responses:
+        '201':
+          $ref: '#/components/responses/Created'
+        '409':
+          $ref: '#/components/responses/Conflict'
+
+    get:
+      description: Get All Students
+      operationId: getAllStudents
+      responses:
+        '200':
+          description: array of students
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Student'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+
+  /students/{id}:
+
+    parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: integer
+          format: int64
+          minimum: 1
+
+    get:
+      description: Gets student by id
+      summary: Returns a student by Id
+      operationId: findStudentById
+      responses:
+        '200':
+          description: Student object by Id
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Student'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+    delete:
+      description: Delete Student by Id
+      operationId: deleteStudent
+      responses:
+        '200':
+          description: Ok
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: test
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+    put:
+      description: Update Student
+      operationId: updateStudent
+      requestBody:
+        $ref: '#/components/requestBodies/Student'
+      responses:
+        '200':
+          $ref: '#/components/responses/Ok'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+
+components:
+
+  requestBodies:
+    Student:
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              firstName:
+                type: string
+              lastName:
+                type: string
+              email:
+                type: string
+              password:
+                type: string
+              dateOfBirth:
+                type: string
+                format: date
+                description: date
+                example: "2021-06-19"
+          examples:
+            '0':
+              $ref: '#/components/examples/Student'
+
+
+  examples:
+
+    Student:
+      value:
+        {
+          "firstName": "Marek",
+          "lastName": "Markiewicz",
+          "email": "marek.markiewicz@gmail.com",
+          "password": "1234",
+          "dateOfBirth": "2012-12-12",
+          $ref: '#/components/schemas/UserType'
+        }
+
+
+  schemas:
+
+    Status:
+      type: object
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+      required:
+        - code
+        - message
+
+    UserType:
+      type: string
+      enum:
+        - STUDENT
+        - TEACHER
+
+    Student:
+      type: object
+      properties:
+        firstName:
+          type: string
+        lastName:
+          type: string
+        email:
+          type: string
+        password:
+          type: string
+        dateOfBirth:
+          type: string
+          format: date
+          description: date
+          example: "2021-06-19"
+        userType:
+          $ref: '#/components/schemas/UserType'
+
+
+  responses:
+
+    NotFound:
+      description: Not found User with given id
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Status'
+
+    Unauthorized:
+      description: Unauthorized to find user
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Status'
+
+    Created:
+      description: Created new Student
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Status'
+
+    Conflict:
+      description: Student already exist
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Status'
+
+    Ok:
+      description: Success
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Status'

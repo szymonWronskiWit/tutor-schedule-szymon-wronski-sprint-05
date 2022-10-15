@@ -1,0 +1,294 @@
+openapi: 3.0.1
+info:
+  title: teacherApi
+  description: teacherApi
+  version: '0.1'
+
+servers:
+  - url: http://localhost:8080/tutor-schedule
+paths:
+  /teachers:
+    post:
+      description: Adding new Teacher
+      operationId: addNewTeacher
+      requestBody:
+        $ref: '#/components/requestBodies/Teacher'
+      responses:
+        '201':
+          $ref: '#/components/responses/Created'
+        '409':
+          $ref: '#/components/responses/Conflict'
+
+    get:
+      description: Get All Teachers
+      operationId: getAllTeachers
+      responses:
+        '200':
+          description: array of Teachers
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Teacher'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /teachers/{id}:
+    parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: integer
+          format: int64
+          minimum: 1
+    get:
+      description: Gets Teacher by id
+      operationId: findTeacherById
+      responses:
+        '200':
+          description: Teacher object by Id
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Teacher'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+    delete:
+      description: Delete Teacher by Id
+      operationId: deleteTeacher
+      responses:
+        '200':
+          $ref: '#/components/responses/Ok'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+    put:
+      description: Update Teacher
+      operationId: updateTeacher
+      requestBody:
+        $ref: '#/components/requestBodies/Teacher'
+      responses:
+        '200':
+          $ref: '#/components/responses/Ok'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /teachers/{id}/subjects:
+    parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: integer
+          format: int64
+          minimum: 1
+
+      - in: query
+        name: subject
+        schema:
+          type: string
+          example:
+            $ref: '#/components/schemas/SelectedSubject'
+    post:
+      description: Assign subject to teacher
+      operationId: assignSubjectToTeacher
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  example:
+                    $ref: '#/components/schemas/SelectedSubject'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/SubjectIsAssign'
+
+    delete:
+      description: Delete teacher subject
+      operationId: deleteTeacherSubject
+      responses:
+        '200':
+          $ref: '#/components/responses/Ok'
+        '404':
+          $ref: '#/components/responses/SubjectNotFound'
+
+    get:
+      description: Get lesson dates by subject
+      operationId: getTeacherLessonDates
+      responses:
+        '200':
+          description: Teacher subjects
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LessonDates'
+        '404':
+          $ref: '#/components/responses/LessonDateNotFound'
+
+components:
+
+  requestBodies:
+    Teacher:
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              firstName:
+                type: string
+              lastName:
+                type: string
+              email:
+                type: string
+              password:
+                type: string
+              subject:
+                type: string
+                example:
+                  $ref: '#/components/schemas/SelectedSubject'
+              dateOfBirth:
+                type: string
+                format: date
+                description: date
+                example: "2021-06-19"
+          examples:
+            '0':
+              $ref: '#/components/examples/Teacher'
+
+
+  examples:
+    Teacher:
+      value:
+        {
+          "firstName": "Jurek",
+          "lastName": "Jurkiewicz",
+          "email": "jurek.jurkiewicz@gmail.com",
+          "password": "1234",
+          "dateOfBirth": "2012-12-12",
+          "userType": "TEACHER"
+        }
+
+
+  schemas:
+    # Schema for error response body
+    Status:
+      type: object
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+      required:
+        - code
+        - message
+
+    Subject:
+      type: string
+      enum:
+        - MATHEMATICS
+        - BIOLOGY
+
+    SelectedSubject:
+      type: string
+      enum:
+        - BIOLOGY
+        -
+    LessonDates:
+      type: array
+      items:
+        format: date-time
+        example: "2021-06-19 16:30:00"
+
+    Teacher:
+      type: object
+      properties:
+        firstName:
+          type: string
+        lastName:
+          type: string
+        email:
+          type: string
+        password:
+          type: string
+        dateOfBirth:
+          type: string
+          format: date
+          description: date
+          example: "2021-06-19"
+        subjects:
+          type: array
+          items:
+            allOf:
+              - $ref: '#/components/schemas/Subject'
+          uniqueItems: true
+        userType:
+          type: string
+
+
+  responses:
+    NotFound:
+      description: Not found User with given id
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Status'
+
+    Unauthorized:
+      description: Unauthorized to find user
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Status'
+
+    Created:
+      description: Created new Teacher
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Status'
+
+    Conflict:
+      description: Teacher already exist
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Status'
+
+    Ok:
+      description: Success
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Status'
+
+    SubjectIsAssign:
+      description: Subject Is assign to other teacher
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Status'
+
+    LessonDateNotFound:
+      description: Not found dates for this subject
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Status'
+
+    SubjectNotFound:
+      description: Not found dates for this subject
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Status'
